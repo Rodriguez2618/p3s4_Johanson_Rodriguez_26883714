@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<%- include('partials/head', { title: 'Home' }); -%>
+
+  <body>
+    <%- include('partials/nav'); -%>
+
+      <% if(categoria && categoria.id > 1) { %>
+        <form id="form" name="form" method="post">
+          <h1>Editar categoria</h1>
+        
+          <div class="box">
+            <div class="input__wrapper">
+              <input id="categoria" type="text" name="categoria" placeholder="Nombre de la categoria" value="<%- categoria.categoria %>" required class="input__field"> 
+              <label for="password" class="input__label">
+                Nombre
+              </label>
+            </div>
+          </div>
+        
+          <button type="submit" class="btn">Crear</button>
+        </form>
+      <% } else if(categoria.id === 1) { %>
+        <h1>La categoria no se puede editar porque es la categoria por defecto</h1>
+      <% } else { %>
+        <h1>La categoria no existe</h1>
+      <% } %>
+
+      <script src="/public/nav.js"></script>
+      <script>
+        window.onload = function () {
+          const form = document.forms["form"];
+
+          function disableSubmit() {
+            form.removeEventListener("submit", onFormSubmit);
+          }
+
+          function enableSubmit() {
+            form.addEventListener("submit", onFormSubmit);
+          }
+
+          async function onFormSubmit(e) {
+            e.preventDefault();
+            disableSubmit();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            if (!data.categoria || data.categoria.length < 3) {
+              alert("La categoria debe tener al menos 3 caracteres");
+              enableSubmit();
+              return;
+            }
+
+            const response = await fetch("/categorias/<%= categoria.id %>", {
+              method: "PUT",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+              window.location.href = "/categorias";
+            }
+          }
+
+          form.addEventListener('submit', onFormSubmit)
+        };
+      </script>
+  </body>
+
+</html>

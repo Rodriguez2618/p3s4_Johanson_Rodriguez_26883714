@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<%- include('partials/head', { title: 'Home' }); -%>
+
+  <body>
+    <%- include('partials/nav'); -%>
+
+      <% if(producto) { %>
+        <form name="form">
+          <h1>Editar producto</h1>
+        
+          <input type="text" hidden name="id" value="<%= producto.id %>" />
+        
+          <div class="form-grid">
+            <div class="box">
+              <div class="input__wrapper">
+                <input id="nombre_producto" type="text" name="codigo" placeholder="Nombre del producto" value="<%= producto.codigo %>"
+                   required class="input__field">
+                <label for="password" class="input__label">
+                  Código
+                </label>
+              </div>
+            </div>
+        
+            <div class="box">
+              <div class="input__wrapper">
+                <input id="nombre_producto" type="text" name="nombre_producto" placeholder="Nombre del producto" value="<%= producto.nombre_producto %>"
+                   required class="input__field">
+                <label for="password" class="input__label">
+                  Nombre
+                </label>
+              </div>
+            </div>
+        
+            <div class="box">
+              <div class="input__wrapper">
+                <input id="nombre_producto" type="number" name="precio" placeholder="Nombre del producto" value="<%= producto.precio %>"
+                   required class="input__field">
+                <label for="password" class="input__label">
+                  Precio
+                </label>
+              </div>
+            </div>
+        
+            <div class="box">
+              <div class="input__wrapper">
+                <input id="nombre_producto" type="text" name="existencia_actual" placeholder="Nombre del producto" value="<%= producto.existencia_actual %>"
+                   required class="input__field">
+                <label for="password" class="input__label">
+                  Cantidad actual
+                </label>
+              </div>
+            </div>
+        
+            <% if(categorias && categorias.length> 0) { %>
+              <div class="box form-select">
+                <div class="input__wrapper">
+                  <select id="nombre_producto" type="text" name="categoria_id" placeholder="Nombre del producto" required
+                    class="input__field">
+                    <option value="#" selected>Seleccionar</option>
+                    <% categorias.forEach(cat=> { %>
+                      <option value="<%= cat.id %>">
+                        <%= cat.categoria %>
+                      </option>
+                      <% }) %>
+                  </select>
+                  <label for="password" class="input__label">
+                    Categoria
+                  </label>
+                </div>
+              </div>
+              <% } %>
+          </div>
+        
+          <% if(categorias && categorias.length> 0) { %>
+            <button type="submit" class="btn">Crear</button>
+            <% } else { %>
+              <h2>Se necesita crear una categoria</h2>
+            <% } %>
+        </form>
+      <% } else { %>
+        <h1>No existe el producto</h1>
+      <% } %>
+
+      <script src="/public/nav.js"></script>
+      <script>
+        window.onload = function () {
+          const form = document.forms["form"];
+
+          function disableSubmit() {
+            form.removeEventListener("submit", onFormSubmit);
+          }
+
+          function enableSubmit() {
+            form.addEventListener("submit", onFormSubmit);
+          }
+
+          async function onFormSubmit(e) {
+            e.preventDefault();
+            disableSubmit();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            if(data.categoria_id == "#") {
+              alert("La categoria no puede ser vacia");
+              enableSubmit();
+              return;
+            }
+
+            if(data.precio <= 0 ) {
+              alert("El precio no puede ser negativo");
+              enableSubmit();
+              return;
+            }
+
+            if(data.existencia_actual <= 0 ) {
+              alert("La existencia actual no puede ser negativa");
+              enableSubmit();
+              return;
+            }
+
+            const response = await fetch(`/productos/${data.id}`, {
+              method: "PUT",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+              window.location.href = "/productos";
+            }
+          }
+
+          form.addEventListener('submit', onFormSubmit)
+        };
+      </script>
+  </body>
+
+</html>

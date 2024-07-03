@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<%- include('partials/head', { title: 'Home' }); -%>
+  <body>
+  <%- include('partials/nav'); -%>
+
+  <form id="form" name="form" method="post">
+    <h1>Crear nueva categoria</h1>
+      
+      <div class="box">
+        <div class="input__wrapper">
+          <input id="categoria" type="text" name="categoria" placeholder="Nombre de la categoria" required class="input__field">
+          <label for="password" class="input__label">
+            Nombre
+          </label>
+        </div>
+      </div>
+
+    <button type="submit" class="btn">Crear</button>
+  </form>
+
+  <script src="/public/nav.js"></script>
+  <script>
+    window.onload = function () {
+      const form = document.forms["form"];
+
+      function disableSubmit() {
+        form.removeEventListener("submit", onFormSubmit);
+      }
+
+      async function onFormSubmit(e) {
+        e.preventDefault();
+        disableSubmit();
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        if (!data.categoria || data.categoria.length < 3) {
+          alert("La categoria debe tener al menos 3 caracteres");
+          return;
+        }
+        
+        const response = await fetch("/categorias", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          window.location.href = "/categorias";
+        }
+      }
+
+      form.addEventListener('submit', onFormSubmit)
+    };
+  </script>
+</body>
+</html>

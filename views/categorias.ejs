@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<%- include('partials/head', { title: 'Categorias' }) -%>
+
+  <body>
+    <%- include('partials/nav') -%>
+
+      <article class="table-widget">
+        <div class="caption">
+          <h2>
+            Categorias
+          </h2>
+          <a href="/categorias/crear" class="export-btn" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-export" width="24"
+              height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+              <path d="M11.5 21h-4.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v5m-5 6h7m-3 -3l3 3l-3 3" />
+            </svg>
+            Nueva categoría
+          </a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="team-member-rows">
+            <% if(categorias && categorias.length > 0) { %>
+              <% categorias.forEach(categoria => { %>
+                <tr>
+                  <td>
+                    <%= categoria.id %>
+                  </td>
+                  <td>
+                    <%= categoria.categoria %>
+                  </td>
+                  <td class="actions">
+                    <% if(categoria.id !== 1) { %>
+                      <a class="action tag--dev" href="/categorias/editar/<%= categoria.id %>">Editar</a>
+                      <a class="action delete-button tag--QA" data-target="<%= categoria.id %>">Eliminar</a>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </article>
+
+      <script src="/public/nav.js"></script>
+      <script>
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', async () => {
+            const target = button.getAttribute('data-target');
+            const confirm = window.confirm('¿Estás seguro de eliminar esta categoría?');
+
+            if (confirm) {
+              await fetch(`/categorias/${target}`, {
+                method: 'DELETE'
+              });
+              location.reload();
+            }
+          });
+        });
+      </script>
+  </body>
+
+</html>
